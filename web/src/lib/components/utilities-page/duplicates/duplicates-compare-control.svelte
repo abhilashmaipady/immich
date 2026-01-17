@@ -6,7 +6,7 @@
   import { assetViewingStore } from '$lib/stores/asset-viewing.store';
   import { handlePromiseError } from '$lib/utils';
   import { getNextAsset, getPreviousAsset } from '$lib/utils/asset-utils';
-  import { suggestDuplicate } from '$lib/utils/duplicate-utils';
+  import { sortDuplicates, suggestDuplicate } from '$lib/utils/duplicate-utils';
   import { navigate } from '$lib/utils/navigation';
   import { getAssetInfo, type AssetResponseDto } from '@immich/sdk';
   import { Button } from '@immich/ui';
@@ -24,6 +24,7 @@
   let { assets, onResolve, onStack }: Props = $props();
   const { isViewing: showAssetViewer, asset: viewingAsset, setAsset } = assetViewingStore;
 
+  let sortedAssets = $derived(sortDuplicates(assets).reverse());
   // eslint-disable-next-line svelte/no-unnecessary-state-wrap
   let selectedAssetIds = $state(new SvelteSet<string>());
   let trashCount = $derived(assets.length - selectedAssetIds.size);
@@ -87,8 +88,8 @@
 
   const assetCursor = $derived({
     current: $viewingAsset,
-    nextAsset: getNextAsset(assets, $viewingAsset),
-    previousAsset: getPreviousAsset(assets, $viewingAsset),
+    nextAsset: getNextAsset(sortedAssets, $viewingAsset),
+    previousAsset: getPreviousAsset(sortedAssets, $viewingAsset),
   });
 </script>
 
@@ -97,7 +98,7 @@
     { shortcut: { key: 'a' }, onShortcut: onSelectAll },
     {
       shortcut: { key: 's' },
-      onShortcut: () => onViewAsset(assets[0]),
+      onShortcut: () => onViewAsset(sortedAssets[0]),
     },
     { shortcut: { key: 'd' }, onShortcut: onSelectNone },
     { shortcut: { key: 'c', shift: true }, onShortcut: handleResolve },
@@ -105,7 +106,7 @@
   ]}
 />
 
-<div class="rounded-3xl border dark:border-2 border-gray-300 dark:border-gray-700 max-w-256 mx-auto mb-4 py-6 px-0.2">
+<div class="rounded-3xl border dark:border-2 border-gray-300 dark:border-gray-700 mx-auto mb-4 py-6 px-0.2">
   <div class="flex flex-wrap gap-y-6 mb-4 px-6 w-full place-content-end justify-between">
     <!-- MARK ALL BUTTONS -->
     <div class="flex text-xs text-black">
@@ -157,10 +158,10 @@
     </div>
   </div>
 
-  <div class="overflow-x-auto p-2">
-    <div class="flex flex-nowrap gap-1 place-items-start justify-center min-w-full w-fit mx-auto">
-      {#each assets as asset (asset.id)}
-        <DuplicateAsset {assets} {asset} {onSelectAsset} isSelected={selectedAssetIds.has(asset.id)} {onViewAsset} />
+  <div class="p-2">
+    <div class="flex flex-wrap gap-1 place-items-start justify-start w-full mx-auto [&>*]:flex-none">
+      {#each sortedAssets as asset (asset.id)}
+        <DuplicateAsset assets={sortedAssets} {asset} {onSelectAsset} isSelected={selectedAssetIds.has(asset.id)} {onViewAsset} />
       {/each}
     </div>
   </div>

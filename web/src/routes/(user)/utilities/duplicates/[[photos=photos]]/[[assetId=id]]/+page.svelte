@@ -239,6 +239,58 @@
     </HStack>
   {/snippet}
 
+  {#snippet paginationControls()}
+    <div class="flex mb-4 sm:px-6 w-full place-content-center justify-between items-center place-items-center">
+      <div class="flex text-xs text-black">
+        <Button
+          size="small"
+          leadingIcon={mdiPageFirst}
+          color="primary"
+          class="flex place-items-center rounded-s-full gap-2 px-2 sm:px-4"
+          onclick={handleFirst}
+          disabled={duplicatesIndex === 0}
+        >
+          {$t('first')}
+        </Button>
+        <Button
+          size="small"
+          leadingIcon={mdiChevronLeft}
+          color="primary"
+          class="flex place-items-center rounded-e-full gap-2 px-2 sm:px-4"
+          onclick={handlePrevious}
+          disabled={duplicatesIndex === 0}
+        >
+          {$t('previous')}
+        </Button>
+      </div>
+      <p class="border px-3 md:px-6 py-1 dark:bg-subtle rounded-lg text-xs md:text-sm">
+        {duplicatesIndex + 1} / {duplicates.length.toLocaleString($locale)}
+      </p>
+      <div class="flex text-xs text-black">
+        <Button
+          size="small"
+          trailingIcon={mdiChevronRight}
+          color="primary"
+          class="flex place-items-center rounded-s-full gap-2 px-2 sm:px-4"
+          onclick={handleNext}
+          disabled={duplicatesIndex === duplicates.length - 1}
+        >
+          {$t('next')}
+        </Button>
+        <Button
+          size="small"
+          trailingIcon={mdiPageLast}
+          color="primary"
+          class="flex place-items-center rounded-e-full gap-2 px-2 sm:px-4"
+          onclick={handleLast}
+          disabled={duplicatesIndex === duplicates.length - 1}
+        >
+          {$t('last')}
+        </Button>
+      </div>
+    </div>
+  {/snippet}
+
   <div class="">
     {#if duplicates && duplicates.length > 0}
       <div class="flex items-center mb-2">
@@ -256,6 +308,10 @@
         />
       </div>
 
+      <div class="w-full">
+        {@render paginationControls()}
+        </div>
+
       {#key duplicates[duplicatesIndex].duplicateId}
         <DuplicatesCompareControl
           assets={duplicates[duplicatesIndex].assets}
@@ -263,56 +319,8 @@
             handleResolve(duplicates[duplicatesIndex].duplicateId, duplicateAssetIds, trashIds)}
           onStack={(assets) => handleStack(duplicates[duplicatesIndex].duplicateId, assets)}
         />
-        <div class="max-w-5xl mx-auto mb-16">
-          <div class="flex mb-4 sm:px-6 w-full place-content-center justify-between items-center place-items-center">
-            <div class="flex text-xs text-black">
-              <Button
-                size="small"
-                leadingIcon={mdiPageFirst}
-                color="primary"
-                class="flex place-items-center rounded-s-full gap-2 px-2 sm:px-4"
-                onclick={handleFirst}
-                disabled={duplicatesIndex === 0}
-              >
-                {$t('first')}
-              </Button>
-              <Button
-                size="small"
-                leadingIcon={mdiChevronLeft}
-                color="primary"
-                class="flex place-items-center rounded-e-full gap-2 px-2 sm:px-4"
-                onclick={handlePrevious}
-                disabled={duplicatesIndex === 0}
-              >
-                {$t('previous')}
-              </Button>
-            </div>
-            <p class="border px-3 md:px-6 py-1 dark:bg-subtle rounded-lg text-xs md:text-sm">
-              {duplicatesIndex + 1} / {duplicates.length.toLocaleString($locale)}
-            </p>
-            <div class="flex text-xs text-black">
-              <Button
-                size="small"
-                trailingIcon={mdiChevronRight}
-                color="primary"
-                class="flex place-items-center rounded-s-full gap-2 px-2 sm:px-4"
-                onclick={handleNext}
-                disabled={duplicatesIndex === duplicates.length - 1}
-              >
-                {$t('next')}
-              </Button>
-              <Button
-                size="small"
-                trailingIcon={mdiPageLast}
-                color="primary"
-                class="flex place-items-center rounded-e-full gap-2 px-2 sm:px-4"
-                onclick={handleLast}
-                disabled={duplicatesIndex === duplicates.length - 1}
-              >
-                {$t('last')}
-              </Button>
-            </div>
-          </div>
+        <div class="mb-16 w-full">
+          {@render paginationControls()}
         </div>
       {/key}
     {:else}
