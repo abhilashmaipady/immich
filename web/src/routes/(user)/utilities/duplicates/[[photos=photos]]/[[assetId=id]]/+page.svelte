@@ -310,7 +310,7 @@
 
       <div class="w-full">
         {@render paginationControls()}
-        </div>
+      </div>
 
       {#key duplicates[duplicatesIndex].duplicateId}
         <DuplicatesCompareControl

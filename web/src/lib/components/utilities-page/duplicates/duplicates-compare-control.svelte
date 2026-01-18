@@ -161,7 +161,13 @@
   <div class="p-2">
     <div class="flex flex-wrap gap-1 place-items-start justify-start w-full mx-auto [&>*]:flex-none">
       {#each sortedAssets as asset (asset.id)}
-        <DuplicateAsset assets={sortedAssets} {asset} {onSelectAsset} isSelected={selectedAssetIds.has(asset.id)} {onViewAsset} />
+        <DuplicateAsset
+          assets={sortedAssets}
+          {asset}
+          {onSelectAsset}
+          isSelected={selectedAssetIds.has(asset.id)}
+          {onViewAsset}
+        />
       {/each}
     </div>
   </div>
