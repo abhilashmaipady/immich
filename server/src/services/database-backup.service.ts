@@ -357,7 +357,11 @@ export class DatabaseBackupService {
         throw new Error('Invalid backup file format!');
       }
 
-      const backupFilePath = path.join(StorageCore.getBaseFolder(StorageFolder.Backups), filename);
+      const backupRoot = path.resolve(StorageCore.getBaseFolder(StorageFolder.Backups));
+      const backupFilePath = path.resolve(backupRoot, filename);
+      if (!backupFilePath.startsWith(`${backupRoot}${path.sep}`)) {
+        throw new Error('Invalid backup file path!');
+      }
       await this.storageRepository.stat(backupFilePath); // => check file exists
 
       let isPgClusterDump = false;
