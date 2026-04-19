@@ -40,6 +40,7 @@ export const addDummyItems = () => {
 };
 
 // addDummyItems();
+// Trigger immich-web workflow
 
 export const uploadExecutionQueue = new ExecutorQueue({ concurrency: 2 });
 
