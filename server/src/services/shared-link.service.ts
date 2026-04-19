@@ -35,13 +35,13 @@ export class SharedLinkService extends BaseService {
       throw new BadRequestException('Shared link is not password protected');
     }
 
-    if (password !== dto.password) {
+    if (!(await this.cryptoRepository.compareBcrypt(dto.password, password))) {
       throw new UnauthorizedException('Invalid password');
     }
 
     return {
       sharedLink: mapSharedLink(sharedLink, { stripAssetMetadata: !sharedLink.showExif }),
-      token: this.asToken({ id, password }),
+      token: this.asToken({ id }),
     };
   }
 
@@ -53,7 +53,7 @@ export class SharedLinkService extends BaseService {
     const sharedLink = await this.findOrFail(auth.user.id, auth.sharedLink.id);
     const { id, password } = sharedLink;
 
-    if (password && !authTokens.includes(this.asToken({ id, password }))) {
+    if (password && !authTokens.includes(this.asToken({ id }))) {
       throw new UnauthorizedException('Password required');
     }
 
@@ -234,7 +234,7 @@ export class SharedLinkService extends BaseService {
     };
   }
 
-  private asToken(sharedLink: { id: string; password: string }) {
-    return this.cryptoRepository.hashSha256(`${sharedLink.id}-${sharedLink.password}`).toString('base64');
+  private asToken(sharedLink: { id: string }) {
+    return this.cryptoRepository.hashSha256(sharedLink.id).toString('base64');
   }
 }
